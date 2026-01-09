@@ -12,6 +12,13 @@ export default function Navbar() {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
 
+  // --- 1. FUNCTION-KA LOGOUT-KA OO LEH REDIRECT ---
+  const handleLogout = () => {
+    logout(); // Faaruqi xogta AuthContext
+    navigate("/"); // U ridi bogga Home si toos ah
+    setIsOpen(false); // Xir menu-ga haddii uu mobile yahay
+  };
+
   const navLinks = [
     { name: "Home", path: "/" },
     { name: "Products", path: "/products" },
@@ -53,7 +60,7 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* --- DHEXDA: Links (Kaliya Desktop) --- */}
+        {/* --- DHEXDA: Links (Desktop) --- */}
         <nav className="hidden md:flex items-center gap-6">
           {navLinks.map((link) => (
             <NavLink
@@ -72,9 +79,9 @@ export default function Navbar() {
           ))}
         </nav>
 
-        {/* --- MIDIG: Badhamada (Had iyo jeer muuqda) --- */}
+        {/* --- MIDIG: Actions --- */}
         <div className="flex items-center gap-1 sm:gap-3">
-          {/* Theme */}
+          {/* Theme Switcher */}
           <button
             onClick={toggleTheme}
             className="p-2 text-slate-600 dark:text-yellow-400"
@@ -121,17 +128,18 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* User / Login */}
+          {/* User / Logout */}
           {isAuthenticated ? (
             <div className="flex items-center gap-2">
               <button
                 onClick={() => navigate("/dashboard")}
-                className="h-8 w-8 rounded-full bg-sky-500 flex items-center justify-center text-white shadow-lg"
+                className="h-8 w-8 rounded-full bg-sky-500 flex items-center justify-center text-white shadow-lg transition-transform active:scale-90"
               >
                 <User size={16} />
               </button>
+              {/* --- 2. LOGOUT DESKTOP --- */}
               <button
-                onClick={logout}
+                onClick={handleLogout}
                 className="hidden sm:flex p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors"
               >
                 <LogOut size={18} />
@@ -148,10 +156,10 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* --- MOBILE MENU DROPDOWN (Kaliya Links-ka) --- */}
+      {/* --- MOBILE DROPDOWN --- */}
       <div
         className={`md:hidden transition-all duration-300 ease-in-out bg-white dark:bg-slate-900 border-b dark:border-white/5 overflow-hidden ${
-          isOpen ? "max-h-64" : "max-h-0"
+          isOpen ? "max-h-72" : "max-h-0"
         }`}
       >
         <div className="p-4 flex flex-col gap-4">
@@ -166,8 +174,9 @@ export default function Navbar() {
             </NavLink>
           ))}
           {isAuthenticated && (
+            /* --- 3. LOGOUT MOBILE --- */
             <button
-              onClick={logout}
+              onClick={handleLogout}
               className="flex items-center gap-2 text-red-500 font-bold border-t dark:border-white/5 pt-4"
             >
               <LogOut size={18} /> Logout

@@ -12,8 +12,8 @@ import {
   User,
   Lock,
   Moon,
-  Menu, // Ku dar halkan
-  X, // Ku dar halkan
+  Menu,
+  X,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
@@ -36,7 +36,14 @@ export default function Dashboard() {
     newPassword: "",
   });
 
-  // --- 3. DARK MODE LOGIC ---
+  // --- 3. HANDLE LOGOUT WITH REDIRECT ---
+  const handleLogout = () => {
+    logout(); // Waxay tirtiraysaa xogta AuthContext
+    setIsSidebarOpen(false); // Xir sidebar-ka haddii uu mobile yahay
+    navigate("/"); // U ridi bogga Home si toos ah
+  };
+
+  // --- 4. DARK MODE LOGIC ---
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add("dark");
@@ -67,7 +74,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-[#f8fafc] dark:bg-slate-950 flex flex-col md:flex-row text-slate-600 dark:text-slate-400 font-sans transition-colors duration-300">
-      {/* --- MOBILE HEADER (Kaliya mobile-ka ayaa arki kara) --- */}
+      {/* --- MOBILE HEADER --- */}
       <div className="md:hidden flex items-center justify-between p-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-white/5 sticky top-0 z-50">
         <h2 className="font-black text-slate-900 dark:text-white text-xl">
           ElectroHub
@@ -80,7 +87,7 @@ export default function Dashboard() {
         </button>
       </div>
 
-      {/* --- SIDEBAR (Responsive Logic) --- */}
+      {/* --- SIDEBAR --- */}
       <aside
         className={`
         fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-white/5 flex flex-col p-4 transition-transform duration-300 transform
@@ -104,7 +111,7 @@ export default function Dashboard() {
                 if (item.id === "cart") navigate("/cart");
                 else {
                   setActiveTab(item.id);
-                  setIsSidebarOpen(false); // Xir sidebar-ka markii la gujiyo mobile-ka
+                  setIsSidebarOpen(false);
                 }
               }}
               className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all ${
@@ -132,15 +139,16 @@ export default function Dashboard() {
           ))}
         </nav>
 
+        {/* LOGOUT BUTTON - Halkan ayaan ku beddelay handleLogout */}
         <button
-          onClick={logout}
+          onClick={handleLogout}
           className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-500 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-500 rounded-xl transition-all border-t border-slate-100 dark:border-white/5 pt-4"
         >
           <LogOut size={20} /> Logout
         </button>
       </aside>
 
-      {/* OVERLAY: Marka sidebar-ka mobile-ka uu furan yahay */}
+      {/* OVERLAY */}
       {isSidebarOpen && (
         <div
           onClick={() => setIsSidebarOpen(false)}
@@ -160,6 +168,7 @@ export default function Dashboard() {
           </p>
         </header>
 
+        {/* --- DASHBOARD VIEW --- */}
         {activeTab === "dashboard" ? (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8">
@@ -248,7 +257,7 @@ export default function Dashboard() {
                       onChange={(e) =>
                         setProfileData({ ...profileData, name: e.target.value })
                       }
-                      className="w-full text-sm p-3 bg-slate-50 dark:bg-white/5 rounded-xl mt-2 border border-slate-100 dark:border-white/5 outline-none focus:ring-1 focus:ring-sky-500"
+                      className="w-full text-sm p-3 bg-slate-50 dark:bg-white/5 rounded-xl mt-2 border border-slate-100 dark:border-white/5 outline-none focus:ring-1 focus:ring-sky-500 text-slate-900 dark:text-white"
                     />
                   </div>
                   <div>
@@ -264,27 +273,9 @@ export default function Dashboard() {
                           email: e.target.value,
                         })
                       }
-                      className="w-full text-sm p-3 bg-slate-50 dark:bg-white/5 rounded-xl mt-2 border border-slate-100 dark:border-white/5 outline-none focus:ring-1 focus:ring-sky-500"
+                      className="w-full text-sm p-3 bg-slate-50 dark:bg-white/5 rounded-xl mt-2 border border-slate-100 dark:border-white/5 outline-none focus:ring-1 focus:ring-sky-500 text-slate-900 dark:text-white"
                     />
                   </div>
-                </div>
-                <div className="pt-2 text-left">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Lock size={14} className="text-slate-400" />
-                    <span className="text-xs font-bold text-slate-500 uppercase">
-                      Change Password
-                    </span>
-                  </div>
-                  <input
-                    type="password"
-                    placeholder="Current Password"
-                    className="w-full text-sm p-3 bg-slate-50 dark:bg-white/5 rounded-xl mb-3 border border-slate-100 dark:border-white/5 focus:ring-1 focus:ring-sky-500 outline-none"
-                  />
-                  <input
-                    type="password"
-                    placeholder="New Password"
-                    className="w-full text-sm p-3 bg-slate-50 dark:bg-white/5 rounded-xl border border-slate-100 dark:border-white/5 focus:ring-1 focus:ring-sky-500 outline-none"
-                  />
                 </div>
                 <button
                   onClick={handleSave}
@@ -337,7 +328,7 @@ export default function Dashboard() {
   );
 }
 
-// --- HELPER COMPONENTS (Waa siday ahaayeen) ---
+// --- HELPER COMPONENTS ---
 function OrdersTableMarkup({ orders }) {
   return (
     <table className="w-full text-left text-sm">
