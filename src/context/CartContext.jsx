@@ -1,16 +1,19 @@
-import React, { createContext, useState, useContext, useEffect } from "react"; // Ku dar React halkan
+import React, { createContext, useState, useContext, useEffect } from "react";
 import { products as initialProducts } from "../data/products";
+import { useAuth } from "./AuthContext"; // 1. SOO DHOWEYSO AUTHCONTEXT
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-  // 1. Cart State
+  const { user } = useAuth(); // 2. KA SOO BIXI USER-KA HADDA JOOGA
+
+  // Cart State
   const [cart, setCart] = useState(() => {
     const savedCart = localStorage.getItem("cart");
     return savedCart ? JSON.parse(savedCart) : [];
   });
 
-  // 2. Orders State
+  // Orders State
   const [orders, setOrders] = useState(() => {
     const savedOrders = localStorage.getItem("orders");
     return savedOrders ? JSON.parse(savedOrders) : [];
@@ -18,11 +21,26 @@ export const CartProvider = ({ children }) => {
 
   const [searchTerm, setSearchTerm] = useState("");
 
+  // 3. AUTO-CLEAR LOGIC (Halkan ayaa muhiim ah)
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-    localStorage.setItem("orders", JSON.stringify(orders));
-  }, [cart, orders]);
+    if (!user) {
+      // Haddii qofku Logout dhaho, faaruqi wax kasta
+      setCart([]);
+      setOrders([]);
+      localStorage.removeItem("cart");
+      localStorage.removeItem("orders");
+    }
+  }, [user]); // Mar kasta oo user-ku isbeddelo ayuu shaqaynayaa
 
+  useEffect(() => {
+    // Kaliya kaydi haddii uu user jiro
+    if (user) {
+      localStorage.setItem("cart", JSON.stringify(cart));
+      localStorage.setItem("orders", JSON.stringify(orders));
+    }
+  }, [cart, orders, user]);
+
+  // ... inta kale ee function-nadaada (addToCart, removeFromCart, iwm) siday ahaayeen u daa ...
   const addToCart = (product) => {
     setCart((prev) => {
       const isExist = prev.find((item) => item.id === product.id);
@@ -52,7 +70,6 @@ export const CartProvider = ({ children }) => {
 
   const placeOrder = () => {
     if (cart.length === 0) return false;
-
     const newOrder = {
       id: `#ORD-${Math.floor(Math.random() * 90000) + 10000}`,
       product:
@@ -66,7 +83,6 @@ export const CartProvider = ({ children }) => {
       date: new Date().toLocaleDateString(),
       status: "Delivered",
     };
-
     setOrders([newOrder, ...orders]);
     setCart([]);
     return true;
@@ -76,7 +92,6 @@ export const CartProvider = ({ children }) => {
     (sum, item) => sum + item.price * (item.quantity || 1),
     0
   );
-
   const filteredProducts = initialProducts.filter((p) =>
     p.title.toLowerCase().includes(searchTerm.toLowerCase())
   );

@@ -9,22 +9,25 @@ import {
   LogOut,
   ArrowLeft,
   CreditCard,
-  TrendingUp,
-  ChevronRight,
   User,
   Lock,
   Moon,
+  Menu, // Ku dar halkan
+  X, // Ku dar halkan
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 
 export default function Dashboard() {
-  const { user, logout, updateUser } = useAuth(); // Ku dar updateUser halkan
+  const { user, logout, updateUser } = useAuth();
   const { totalItems, totalPrice, orders } = useCart();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("dashboard");
 
-  // --- 1. SETTINGS STATE (DYNAMISM) ---
+  // --- 1. STATE-KA MOBILE MENU ---
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // --- 2. SETTINGS STATE ---
   const [darkMode, setDarkMode] = useState(true);
   const [profileData, setProfileData] = useState({
     name: user?.name || "cimran",
@@ -33,7 +36,7 @@ export default function Dashboard() {
     newPassword: "",
   });
 
-  // --- 2. DARK MODE LOGIC ---
+  // --- 3. DARK MODE LOGIC ---
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add("dark");
@@ -42,19 +45,15 @@ export default function Dashboard() {
     }
   }, [darkMode]);
 
-  // --- 3. SAVE CHANGES FUNCTION (Cusboonaysiinta Navbar-ka) ---
- const handleSave = () => {
-   const updatedData = {
-     ...user,
-     name: profileData.name,
-     email: profileData.email,
-   };
-
-  
-   updateUser(updatedData);
-
-   alert("Profile-kaaga waa la cusboonaysiiyay!");
- };
+  const handleSave = () => {
+    const updatedData = {
+      ...user,
+      name: profileData.name,
+      email: profileData.email,
+    };
+    updateUser(updatedData);
+    alert("Profile-kaaga waa la cusboonaysiiyay!");
+  };
 
   const totalSpent = orders?.reduce((sum, order) => sum + order.amount, 0) || 0;
 
@@ -67,9 +66,29 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] dark:bg-slate-950 flex text-slate-600 dark:text-slate-400 font-sans transition-colors duration-300">
-      {/* SIDEBAR */}
-      <aside className="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-white/5 flex flex-col p-4 sticky top-0 h-screen">
+    <div className="min-h-screen bg-[#f8fafc] dark:bg-slate-950 flex flex-col md:flex-row text-slate-600 dark:text-slate-400 font-sans transition-colors duration-300">
+      {/* --- MOBILE HEADER (Kaliya mobile-ka ayaa arki kara) --- */}
+      <div className="md:hidden flex items-center justify-between p-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-white/5 sticky top-0 z-50">
+        <h2 className="font-black text-slate-900 dark:text-white text-xl">
+          ElectroHub
+        </h2>
+        <button
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          className="p-2 bg-slate-100 dark:bg-white/5 rounded-lg text-slate-600 dark:text-white"
+        >
+          {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+      </div>
+
+      {/* --- SIDEBAR (Responsive Logic) --- */}
+      <aside
+        className={`
+        fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-white/5 flex flex-col p-4 transition-transform duration-300 transform
+        md:relative md:translate-x-0 ${
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }
+      `}
+      >
         <button
           onClick={() => navigate("/")}
           className="flex items-center gap-2 px-4 py-3 text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/5 rounded-xl transition-all mb-4"
@@ -83,7 +102,10 @@ export default function Dashboard() {
               key={item.id}
               onClick={() => {
                 if (item.id === "cart") navigate("/cart");
-                else setActiveTab(item.id);
+                else {
+                  setActiveTab(item.id);
+                  setIsSidebarOpen(false); // Xir sidebar-ka markii la gujiyo mobile-ka
+                }
               }}
               className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all ${
                 activeTab === item.id
@@ -118,13 +140,21 @@ export default function Dashboard() {
         </button>
       </aside>
 
+      {/* OVERLAY: Marka sidebar-ka mobile-ka uu furan yahay */}
+      {isSidebarOpen && (
+        <div
+          onClick={() => setIsSidebarOpen(false)}
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+        />
+      )}
+
       {/* MAIN CONTENT */}
-      <main className="flex-1 p-8 overflow-y-auto text-left">
-        <header className="mb-8">
-          <h1 className="text-2xl font-black text-slate-900 dark:text-white capitalize">
+      <main className="flex-1 p-4 md:p-8 overflow-y-auto text-left">
+        <header className="mb-8 mt-2 md:mt-0">
+          <h1 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white capitalize">
             {activeTab} Page
           </h1>
-          <p className="text-slate-500 mt-1">
+          <p className="text-slate-500 mt-1 text-sm md:text-base">
             Welcome back, {user?.name || "cimran"}! Here is your account
             overview.
           </p>
@@ -132,7 +162,7 @@ export default function Dashboard() {
 
         {activeTab === "dashboard" ? (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8">
               <StatCard
                 icon={Package}
                 color="bg-blue-500"
@@ -166,7 +196,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
               <ActionCard
                 icon={ShoppingCart}
                 color="bg-sky-500"
@@ -184,7 +214,6 @@ export default function Dashboard() {
             </div>
           </>
         ) : activeTab === "orders" ? (
-          /* --- ORDERS PAGE DYNAMIC --- */
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-2xl overflow-hidden shadow-sm">
             <div className="p-6 border-b border-slate-100 dark:border-white/5 font-bold text-slate-900 dark:text-white text-lg text-left">
               Your Full Order History
@@ -200,7 +229,7 @@ export default function Dashboard() {
         ) : activeTab === "settings" ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-in fade-in duration-500">
             {/* Profile & Security Card */}
-            <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl border border-slate-200 dark:border-white/5 shadow-sm">
+            <div className="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-3xl border border-slate-200 dark:border-white/5 shadow-sm">
               <div className="flex items-center gap-3 mb-8">
                 <User className="text-sky-500" size={20} />
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white">
@@ -266,37 +295,35 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* System Preferences Card */}
-            <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl border border-slate-200 dark:border-white/5 shadow-sm">
+            {/* Preferences */}
+            <div className="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-3xl border border-slate-200 dark:border-white/5 shadow-sm">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-8 text-left">
                 System Preferences
               </h3>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-5 bg-slate-50 dark:bg-white/5 rounded-2xl border border-slate-100 dark:border-white/5">
-                  <div className="flex items-center gap-4 text-left">
-                    <Moon size={20} className="text-sky-500" />
-                    <div>
-                      <p className="font-bold text-sm text-slate-900 dark:text-white">
-                        Dark Mode
-                      </p>
-                      <p className="text-[10px] text-slate-400">
-                        Switch app appearance
-                      </p>
-                    </div>
+              <div className="flex items-center justify-between p-5 bg-slate-50 dark:bg-white/5 rounded-2xl border border-slate-100 dark:border-white/5">
+                <div className="flex items-center gap-4 text-left">
+                  <Moon size={20} className="text-sky-500" />
+                  <div>
+                    <p className="font-bold text-sm text-slate-900 dark:text-white">
+                      Dark Mode
+                    </p>
+                    <p className="text-[10px] text-slate-400">
+                      Switch app appearance
+                    </p>
                   </div>
-                  <button
-                    onClick={() => setDarkMode(!darkMode)}
-                    className={`w-12 h-6 rounded-full transition-all flex items-center px-1 ${
-                      darkMode ? "bg-sky-500" : "bg-slate-300"
-                    }`}
-                  >
-                    <div
-                      className={`w-4 h-4 bg-white rounded-full transition-transform ${
-                        darkMode ? "translate-x-6" : "translate-x-0"
-                      }`}
-                    />
-                  </button>
                 </div>
+                <button
+                  onClick={() => setDarkMode(!darkMode)}
+                  className={`w-12 h-6 rounded-full transition-all flex items-center px-1 ${
+                    darkMode ? "bg-sky-500" : "bg-slate-300"
+                  }`}
+                >
+                  <div
+                    className={`w-4 h-4 bg-white rounded-full transition-transform ${
+                      darkMode ? "translate-x-6" : "translate-x-0"
+                    }`}
+                  />
+                </button>
               </div>
             </div>
           </div>
@@ -310,7 +337,7 @@ export default function Dashboard() {
   );
 }
 
-// --- HELPER COMPONENTS ---
+// --- HELPER COMPONENTS (Waa siday ahaayeen) ---
 function OrdersTableMarkup({ orders }) {
   return (
     <table className="w-full text-left text-sm">

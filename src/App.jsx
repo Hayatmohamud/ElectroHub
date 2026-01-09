@@ -12,6 +12,7 @@ import Login from "./pages/Login";
 import { products } from "./data/products.js";
 import Dashboard from "./pages/Dashboard.jsx";
 import Cart from "./pages/Cart.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 export default function App() {
   const { theme } = useTheme(); // Ka soo saar theme-ka hadda jira (light ama dark)
@@ -29,7 +30,14 @@ export default function App() {
           <Route path="/faq" element={<FAQ />} />
           <Route path="/login" element={<Login />} />
           <Route path="/cart" element={<Cart />} />
-          <Route path="/dashboard/*" element={<Dashboard />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Protected Routes: Kuwa u baahan Login */}
           <Route path="/products" element={<Products />} />

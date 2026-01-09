@@ -1,10 +1,13 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // 1. Ku dar useNavigate halkan
 import Rating from "./Rating.jsx";
-import { useCart } from "../context/CartContext.jsx"; // 1. Soo dhex geli CartContext
+import { useCart } from "../context/CartContext.jsx";
+import { useAuth } from "../context/AuthContext.jsx"; // 2. Soo dhex geli AuthContext
 
 export default function ProductCard({ product }) {
-  const { addToCart } = useCart(); // 2. Ka soo bixi function-ka addToCart
+  const { addToCart } = useCart();
+  const { user } = useAuth(); // 3. Ka soo bixi user-ka hadda jooga
+  const navigate = useNavigate(); // 4. Qeex function-ka navigate
 
   const {
     id,
@@ -17,17 +20,25 @@ export default function ProductCard({ product }) {
     rating = 0,
   } = product;
 
-  // Function-ka xallinaya marka badhanka la riixo
   const handleAddToCart = (e) => {
-    e.preventDefault(); // Si uusan Link-gu u kicin marka badhanka la riixo
+    e.preventDefault();
+
+    // Hubi haddii qofku Login yahay
+    if (!user) {
+      alert("Fadlan marka hore Login dheh si aad wax u iibsato!");
+      navigate("/login");
+      return;
+    }
+
+    // Haddii uu qofku jiro, ku dar Cart-ka
     addToCart(product);
+
+    // U gee Dashboard-ka
+    navigate("/dashboard");
   };
 
   return (
-    <div
-      className="group rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 hover:bg-slate-50 dark:hover:bg-white/10 transition-all duration-300 overflow-hidden
-      shadow-lg shadow-slate-200/60 dark:shadow-none hover:-translate-y-1"
-    >
+    <div className="group rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 hover:bg-slate-50 dark:hover:bg-white/10 transition-all duration-300 overflow-hidden shadow-lg shadow-slate-200/60 dark:shadow-none hover:-translate-y-1">
       <div className="relative p-5">
         {/* Discount Label */}
         {typeof discount === "number" && (
@@ -76,12 +87,10 @@ export default function ProductCard({ product }) {
             )}
           </div>
 
-          {/* BADHANKA CART-KA (Hadda wuu shaqaynayaa) */}
           <button
-            onClick={handleAddToCart} // 3. Halkan ku dar function-ka
+            onClick={handleAddToCart}
             className="h-12 w-12 rounded-2xl bg-sky-500 hover:bg-sky-400 text-white dark:text-slate-950 grid place-items-center transition-all shadow-lg shadow-sky-500/20 active:scale-90"
             type="button"
-            aria-label="Add to cart"
           >
             <svg
               width="20"

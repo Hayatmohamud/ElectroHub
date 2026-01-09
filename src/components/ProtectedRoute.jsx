@@ -1,24 +1,16 @@
-import { Navigate, useLocation } from "react-router-dom";
-import { useAuth } from "../context/AuthContext.jsx";
 
-export default function ProtectedRoute({ children }) {
-  const { isLoggedIn, booting } = useAuth();
-  const location = useLocation();
+import { Navigate } from "react-router-dom";
 
-  // inta auth-ka localStorage ka akhrinayo
-  if (booting) {
-    return (
-      <div className="py-16">
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-6 text-slate-300">
-          Loading...
-        </div>
-      </div>
-    );
-  }
+const ProtectedRoute = ({ children }) => {
+  // Waxaan hubineynaa haddii uu jiro 'user' ku kaydsan LocalStorage
+  const user = JSON.parse(localStorage.getItem("user"));
 
-  if (!isLoggedIn) {
-    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
+  if (!user) {
+    // Haddii uusan jirin, u ridi bogga Login
+    return <Navigate to="/login" replace />;
   }
 
   return children;
-}
+};
+
+export default ProtectedRoute;
