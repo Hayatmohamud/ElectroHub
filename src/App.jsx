@@ -1,4 +1,5 @@
-import { Routes, Route } from "react-router-dom";
+import React from "react"; // Ku dar xariiqdan
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import RootLayout from "./layouts/RootLayout.jsx";
 import Home from "./pages/Home.jsx";
 import Products from "./pages/Products.jsx";
@@ -8,9 +9,9 @@ import FAQ from "./pages/FAQ.jsx";
 import { NotFound } from "./pages/NotFound.jsx";
 import { useTheme } from "./context/ThemeContext.jsx"; // Soo dhoofiso useTheme
 import Login from "./pages/Login";
-import { products } from "./data/products.js"
-import Dashboard  from "./pages/Dashboard.jsx"
-import Cart from "./pages/Cart.jsx"
+import { products } from "./data/products.js";
+import Dashboard from "./pages/Dashboard.jsx";
+import Cart from "./pages/Cart.jsx";
 
 export default function App() {
   const { theme } = useTheme(); // Ka soo saar theme-ka hadda jira (light ama dark)

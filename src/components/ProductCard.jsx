@@ -1,3 +1,4 @@
+import React from "react";
 import { Link } from "react-router-dom";
 import Rating from "./Rating.jsx";
 import { useCart } from "../context/CartContext.jsx"; // 1. Soo dhex geli CartContext

@@ -1,4 +1,4 @@
-import { createContext, useState, useContext, useEffect } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react"; // Ku dar React halkan
 import { products as initialProducts } from "../data/products";
 
 const CartContext = createContext();
@@ -10,7 +10,7 @@ export const CartProvider = ({ children }) => {
     return savedCart ? JSON.parse(savedCart) : [];
   });
 
-  // 2. Orders State (Halkan ayay ka imaanayaan Recent Orders-ka Dashboard-ka)
+  // 2. Orders State
   const [orders, setOrders] = useState(() => {
     const savedOrders = localStorage.getItem("orders");
     return savedOrders ? JSON.parse(savedOrders) : [];
@@ -18,7 +18,6 @@ export const CartProvider = ({ children }) => {
 
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Mar kasta oo cart ama orders isbeddelaan, ku keydi LocalStorage
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
     localStorage.setItem("orders", JSON.stringify(orders));
@@ -51,8 +50,6 @@ export const CartProvider = ({ children }) => {
     );
   };
 
-  // 3. FUNCTION-KA IIBSASHADA (Checkout)
-  // Kan ayaad ka soo wacaysaa badhanka Checkout ee bogga Cart-ka
   const placeOrder = () => {
     if (cart.length === 0) return false;
 
@@ -67,11 +64,11 @@ export const CartProvider = ({ children }) => {
         0
       ),
       date: new Date().toLocaleDateString(),
-      status: "Delivered", // Maadaama aysan payment API jirin, toos ayaan Delivered uga dhigaynaa
+      status: "Delivered",
     };
 
-    setOrders([newOrder, ...orders]); // Ku dar liiska hore ee Orders-ka
-    setCart([]); // Faaruji Cart-ka maadaama la iibsaday
+    setOrders([newOrder, ...orders]);
+    setCart([]);
     return true;
   };
 
@@ -88,8 +85,8 @@ export const CartProvider = ({ children }) => {
     <CartContext.Provider
       value={{
         cart,
-        orders, // Kan ku dar value-ga
-        placeOrder, // Kan ku dar value-ga
+        orders,
+        placeOrder,
         addToCart,
         removeFromCart,
         updateQuantity,

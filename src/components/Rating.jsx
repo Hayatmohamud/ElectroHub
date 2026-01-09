@@ -1,3 +1,4 @@
+import React from "react";
 export default function Rating({ value = 0 }) {
   const full = Math.round(value);
   return (

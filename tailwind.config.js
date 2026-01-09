@@ -1,9 +1,12 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  darkMode: "class", // <--- KANI WAA INUU KU JIRAA!
-  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}", // Hubi in xariiqan ay sax tahay
+  ],
   theme: {
     extend: {},
   },
   plugins: [],
+  darkMode: "class", // Muhiim u ah Dashboard-kaaga
 };
