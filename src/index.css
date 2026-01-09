@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+/* Kan ayaa muhiim u ah inuu shaqeeyo 'dark:' prefix-ka */
+@variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  body {
+    @apply bg-white text-slate-900 transition-colors duration-300;
+  }
+}
+
+/* Midabka background-ka guud marka uu dark yahay */
+.dark body {
+  @apply bg-[#020617] text-white;
+}
+
